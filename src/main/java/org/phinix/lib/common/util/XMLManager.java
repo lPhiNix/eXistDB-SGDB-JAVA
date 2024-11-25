@@ -22,7 +22,10 @@ import java.util.List;
 public class XMLManager {
 
     /**
-     * Generates an XML file from a list of objects and saves it to a specified file path.
+     * Generates an XML file from a list of objects and saves it to the specified file path.
+     * This method converts each object in the list to an XML element and adds it to a root element.
+     * The root element's tag name can be specified, or it will be inferred from the first object in the list.
+     * If the objects are not annotated with {@link XMLSerializableModel}, an exception will be thrown.
      *
      * @param <T>              the type of the objects in the list
      * @param objects          the list of objects to be converted to XML
@@ -30,9 +33,11 @@ public class XMLManager {
      * @param rootElementTag   the tag name for the root element of the XML file. If null, the root
      *                         element tag is inferred from the first object in the list
      * @throws Exception       if an error occurs during XML generation or file writing
+     * @throws XMLSerializableNotFoundException if the objects in the list are not annotated with {@link XMLSerializableModel}
      */
     public static <T> void generateXmlFromObjects(List<T> objects, String filePath, String rootElementTag) throws Exception, XMLSerializableNotFoundException {
 
+        // Verifica si la clase del primer objeto en la lista está anotada con la anotación XMLSerializableModel.
         if (!getSpecimenClass(objects).isAnnotationPresent(XMLSerializableModel.class)) {
             throw new XMLSerializableNotFoundException();
         }

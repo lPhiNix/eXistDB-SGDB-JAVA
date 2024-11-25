@@ -11,11 +11,15 @@ package org.phinix.lib.common.util;
  *
  * <pre>
  * if (!object.getClass().isAnnotationPresent(XMLSerializableModel.class)) {
- *     throw new XMLSerializableNotFoundException("Class is not serializable to XML.");
+ *     throw new XMLSerializableNotFoundException();
  * }
  * </pre>
  *
  * This exception ensures that only objects marked as serializable are processed by
  * the XMLManager class, preventing errors during the XML generation process.
  */
-public class XMLSerializableNotFoundException extends Throwable {}
+public class XMLSerializableNotFoundException extends Throwable {
+    public XMLSerializableNotFoundException() {
+        super("Class is not serializable to XML.");
+    }
+}

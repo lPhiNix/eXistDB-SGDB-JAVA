@@ -119,7 +119,7 @@ public class XMLManager {
         for (T object : objects) {
             appendObjectToXml(object, document, rootElement);
         }
-        document.appendChild(rootElement);  // Añadir el rootElement al documento
+        document.appendChild(rootElement); // Añadir el rootElement al documento
     }
 
     /**

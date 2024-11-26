@@ -19,7 +19,7 @@ import java.util.List;
  * It uses reflection to dynamically map the fields of the objects to XML elements and supports the
  * creation of XML files with a customizable root element.
  */
-public class XMLManager {
+public class XMLFileManager {
     /**
      * Generates an XML file from a list of objects and saves it to the specified file path.
      * This method converts each object in the list to an XML element and adds it to a root element.
@@ -53,6 +53,47 @@ public class XMLManager {
     }
 
     /**
+     * Generates an XML file from a list of objects and saves it to the specified file path.
+     * This method converts each object in the list to an XML element and adds it to a root element.
+     * The root element's tag name can be specified, or it will be inferred from the first object in the list.
+     * If the objects are not annotated with {@link XMLSerializableModel}, an exception will be thrown.
+     *
+     * @param <T>                               the type of the objects in the list
+     * @param objects                           the list of objects to be converted to XML
+     * @param filePath                          the path where the generated XML file will be saved
+     *                                          element tag is inferred from the first object in the list
+     * @throws Exception                        if an error occurs during XML generation or file writing
+     * @throws XMLSerializableNotFoundException if the objects in the list are not annotated with {@link XMLSerializableModel}
+     */
+    public static <T> void generateXmlFromObjects(List<T> objects, String filePath) throws Exception, XMLSerializableNotFoundException {
+
+        // Checks if the class of the first object in the list is annotated with the XMLSerializableModel annotation.
+        if (!isXMLSerializable(getSpecimenClass(objects))) {
+            throw new XMLSerializableNotFoundException();
+        }
+
+        // Establish the XML document and root element
+        Document document = createDocument();
+        Element rootElement = createRootElement(document, null, objects);
+
+        // Add each object to the XML
+        appendObjectsToXml(objects, document, rootElement);
+
+        // Save the document to the specified file path
+        writeXmlToFile(document, filePath);
+    }
+
+    /**
+     * Checks if the class of the first object in the list is annotated with the {@link XMLSerializableModel} annotation.
+     *
+     * @param clazz Class to check
+     * @return      True if class is annotated with  with the XMLSerializableModel annotation / False if don't
+     */
+    public static boolean isXMLSerializable(Class<?> clazz) {
+        return clazz.isAnnotationPresent(XMLSerializableModel.class);
+    }
+
+    /**
      * Retrieves the class type of the first object in the list.
      * This method is used to infer the class type of the objects being processed, assuming all objects in the list
      * are of the same class type.
@@ -60,8 +101,9 @@ public class XMLManager {
      * @param objects the list of objects from which to infer the class type
      * @return        the class type of the first object in the list
      */
-    private static Class<?> getSpecimenClass(List<?> objects) {
-        Class<?> clazz = objects.get(0).getClass();
+    public static Class<?> getSpecimenClass(List<?> objects) {
+        Class<?> clazz;
+        clazz = objects.get(0).getClass();
         return clazz;
     }
 

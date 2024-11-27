@@ -34,6 +34,7 @@ public class ExistDB {
      */
     private ExistDB(String user, String password) throws Exception {
         validateCredentials(user, password); // Validate user credentials
+
         this.user = user;
         this.password = password;
 

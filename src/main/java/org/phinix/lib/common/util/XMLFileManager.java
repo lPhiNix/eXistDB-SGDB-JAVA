@@ -37,7 +37,7 @@ public class XMLFileManager {
     public static <T> void generateXmlFromObjects(List<T> objects, String filePath, String rootElementTag) throws Exception, XMLSerializableNotFoundException {
 
         // Checks if the class of the first object in the list is annotated with the XMLSerializableModel annotation.
-        if (!getSpecimenClass(objects).isAnnotationPresent(XMLSerializableModel.class)) {
+        if (!isXMLSerializable(getSpecimenClass(objects))) {
             throw new XMLSerializableNotFoundException();
         }
 

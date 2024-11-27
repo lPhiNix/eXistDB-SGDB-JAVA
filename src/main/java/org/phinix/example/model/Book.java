@@ -6,9 +6,9 @@ import org.phinix.lib.common.util.XMLSerializableModel;
 public class Book {
     private String title;
     private String author;
-    private String year;
+    private int year;
 
-    public Book(String title, String author, String year) {
+    public Book(String title, String author, int year) {
         this.title = title;
         this.author = author;
         this.year = year;
@@ -32,11 +32,11 @@ public class Book {
         this.author = author;
     }
 
-    public String getYear() {
+    public int getYear() {
         return year;
     }
 
-    public void setYear(String year) {
+    public void setYear(int year) {
         this.year = year;
     }
 

@@ -19,7 +19,7 @@ import java.util.logging.Logger;
 public class ExistDB {
     private static final String URI = "xmldb:exist://localhost:8080/exist/xmlrpc"; // URI for connecting to the eXist-db server
     private static final Logger logger = Logger.getLogger(ExistDB.class.getName());
-    private static volatile ExistDB instance;
+    private static volatile ExistDB instance; // Database global instance (Singleton)
 
     private final Database database;
     private final String user;

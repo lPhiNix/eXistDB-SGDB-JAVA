@@ -194,8 +194,18 @@ public class XMLFileManager {
      * @param object the object to get the tag name for
      * @return       the tag name for the object
      */
-    private static String getObjectTagName(Object object) {
-        return object.getClass().getSimpleName().toLowerCase();
+    public static String getObjectTagName(Object object) {
+        return getObjectTagName(object.getClass());
+    }
+
+    /**
+     * Retrieves the tag name for an cass name, converted to lowercase.
+     *
+     * @param clazz  class to get tag name for
+     * @return       the tag name for the class
+     */
+    public static String getObjectTagName(Class<?> clazz) {
+        return clazz.getSimpleName().toLowerCase();
     }
 
     /**

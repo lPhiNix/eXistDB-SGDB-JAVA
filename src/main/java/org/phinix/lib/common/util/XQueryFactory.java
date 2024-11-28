@@ -7,6 +7,19 @@ package org.phinix.lib.common.util;
  */
 public class XQueryFactory {
     /**
+     * Método para construir una consulta XQuery que recupere todos los elementos de una colección.
+     *
+     * @param collectionPath La ruta de la colección en la base de datos eXist-db.
+     * @return La consulta XQuery construida.
+     */
+    public static String buildQuery(String collectionPath) {
+        StringBuilder query = new StringBuilder()
+                .append("for $item in collection('").append(collectionPath).append("') ")
+                .append("return $item");
+        return query.toString();
+    }
+
+    /**
      * Method to build an XQuery query with filters.
      *
      * @param collectionPath The path of the collection in the eXist-db database.

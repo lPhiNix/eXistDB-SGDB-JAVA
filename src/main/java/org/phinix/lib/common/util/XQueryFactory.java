@@ -6,27 +6,14 @@ package org.phinix.lib.common.util;
  * it only generates the query string based on the provided filters.
  */
 public class XQueryFactory {
-
     /**
-     * The unique method to build a basic XQuery query.
+     * Method to build an XQuery query with filters.
      *
      * @param collectionPath The path of the collection in the eXist-db database.
      * @param filters        The filters to be applied in the XQuery.
      * @return The constructed XQuery.
      */
-    public static String buildQuery(String collectionPath, String... filters) {
-        return buildQuery(collectionPath, null, null, filters);
-    }
-
-    /**
-     * Method to build an XQuery query with selected fields and filters.
-     *
-     * @param collectionPath The path of the collection in the eXist-db database.
-     * @param fields         The specific fields to retrieve.
-     * @param filters        The filters to be applied in the XQuery.
-     * @return The constructed XQuery.
-     */
-    public static String buildQuery(String collectionPath, String[] fields, String... filters) {
+    public static String buildQuery(String collectionPath, String[] filters) {
         StringBuilder query = new StringBuilder();
         query.append("for $item in collection('").append(collectionPath).append("') ");
 
@@ -45,31 +32,21 @@ public class XQueryFactory {
             }
         }
 
-        // If fields are specified, select them specifically
-        if (fields != null && fields.length > 0) {
-            query.append("return ");
-            query.append("<result>");
-            for (String field : fields) {
-                query.append("<").append(field).append(">{$item/").append(field).append("}</").append(field).append(">");
-            }
-            query.append("</result>");
-        } else {
-            query.append("return $item");
-        }
+        // Return the full object (no specific fields selected)
+        query.append("return $item");
 
         return query.toString();
     }
 
     /**
-     * Method to build an XQuery query with complex filters and grouping.
+     * Method to build an XQuery query with filters and grouping.
      *
      * @param collectionPath The path of the collection in the eXist-db database.
-     * @param fields         The specific fields to retrieve.
      * @param groupByField   The field to group by.
      * @param filters        The filters to be applied in the XQuery.
      * @return The constructed XQuery.
      */
-    public static String buildQuery(String collectionPath, String[] fields, String groupByField, String... filters) {
+    public static String buildQuery(String collectionPath, String groupByField, String... filters) {
         StringBuilder query = new StringBuilder();
         query.append("for $item in collection('").append(collectionPath).append("') ");
 
@@ -93,17 +70,8 @@ public class XQueryFactory {
             query.append(" group by $item/").append(groupByField);
         }
 
-        // If fields are specified, select them specifically
-        if (fields != null && fields.length > 0) {
-            query.append("return ");
-            query.append("<result>");
-            for (String field : fields) {
-                query.append("<").append(field).append(">{$item/").append(field).append("}</").append(field).append(">");
-            }
-            query.append("</result>");
-        } else {
-            query.append("return $item");
-        }
+        // Return the full object (no specific fields selected)
+        query.append("return $item");
 
         return query.toString();
     }
@@ -112,13 +80,12 @@ public class XQueryFactory {
      * Method to build an XQuery query with filters, grouping, and sorting.
      *
      * @param collectionPath The path of the collection in the eXist-db database.
-     * @param fields         The specific fields to retrieve.
      * @param groupByField   The field to group by.
      * @param orderByField   The field to sort by.
      * @param filters        The filters to be applied in the XQuery.
      * @return The constructed XQuery.
      */
-    public static String buildQuery(String collectionPath, String[] fields, String groupByField, String orderByField, String... filters) {
+    public static String buildQuery(String collectionPath, String groupByField, String orderByField, String... filters) {
         StringBuilder query = new StringBuilder();
         query.append("for $item in collection('").append(collectionPath).append("') ");
 
@@ -147,17 +114,8 @@ public class XQueryFactory {
             query.append(" order by $item/").append(orderByField);
         }
 
-        // If fields are specified, select them specifically
-        if (fields != null && fields.length > 0) {
-            query.append("return ");
-            query.append("<result>");
-            for (String field : fields) {
-                query.append("<").append(field).append(">{$item/").append(field).append("}</").append(field).append(">");
-            }
-            query.append("</result>");
-        } else {
-            query.append("return $item");
-        }
+        // Return the full object (no specific fields selected)
+        query.append("return $item");
 
         return query.toString();
     }

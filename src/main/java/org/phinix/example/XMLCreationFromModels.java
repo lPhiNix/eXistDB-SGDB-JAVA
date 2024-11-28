@@ -2,7 +2,7 @@ package org.phinix.example;
 
 import org.phinix.example.model.Book;
 import org.phinix.example.model.Poem;
-import org.phinix.lib.common.util.XMLFileManager;
+import org.phinix.lib.common.util.XMLFileUtil;
 import org.phinix.lib.common.util.XMLSerializableNotFoundException;
 
 import java.util.ArrayList;
@@ -27,7 +27,7 @@ public class XMLCreationFromModels {
         books.add(new Book("1984", "George Orwell", 1949)); // Add "1984" to the list
 
         // Generate an XML file for the books, with a custom root element <library>
-        XMLFileManager.generateXmlFromObjects(books, "novels.xml", "library");
+        XMLFileUtil.generateXmlFromObjects(books, "novels.xml", "library");
 
         // Create a list of Poem objects
         List<Poem> poems = new ArrayList<>();
@@ -37,6 +37,6 @@ public class XMLCreationFromModels {
         poems.add(new Poem("Altazor", "Vicente Huidobro")); // Add "Altazor" to the list
 
         // Generate an XML file for the poems, with a custom root element <poetry_collection>
-        XMLFileManager.generateXmlFromObjects(poems, "poems.xml", "poetry_collection");
+        XMLFileUtil.generateXmlFromObjects(poems, "poems.xml", "poetry_collection");
     }
 }

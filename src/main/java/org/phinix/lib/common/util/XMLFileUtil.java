@@ -19,7 +19,7 @@ import java.util.List;
  * It uses reflection to dynamically map the fields of the objects to XML elements and supports the
  * creation of XML files with a customizable root element.
  */
-public class XMLFileManager {
+public class XMLFileUtil {
     /**
      * Generates an XML file from a list of objects and saves it to the specified file path.
      * This method converts each object in the list to an XML element and adds it to a root element.

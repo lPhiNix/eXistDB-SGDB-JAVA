@@ -1,6 +1,6 @@
 package org.phinix.lib.dao;
 
-import org.phinix.lib.common.util.XMLFileManager;
+import org.phinix.lib.common.util.XMLFileUtil;
 import org.phinix.lib.common.util.XMLSerializableNotFoundException;
 import org.phinix.lib.service.ExistDB;
 import org.w3c.dom.Document;
@@ -79,7 +79,7 @@ public class TheDao implements Dao {
         // Use XMLFileManager to save the document as an XML file
         try {
             String filePath = collectionPath + File.separator + fileName;
-            XMLFileManager.generateXmlFromObjects(List.of(document), filePath);
+            XMLFileUtil.generateXmlFromObjects(List.of(document), filePath);
             logger.info("File added to collection: " + fileName);
         } catch (Exception e) {
             logger.severe("Error adding file to collection: " + fileName + " - " + e.getMessage());

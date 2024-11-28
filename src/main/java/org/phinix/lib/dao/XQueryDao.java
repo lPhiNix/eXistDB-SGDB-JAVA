@@ -1,6 +1,8 @@
 package org.phinix.lib.dao;
 
-import org.phinix.lib.common.util.XMLFileManager;
+import org.phinix.lib.common.util.XMLSerializableModel;
+import org.phinix.lib.common.util.XMLSerializableNotFoundException;
+import org.phinix.lib.common.util.XMLFileUtil;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -49,8 +51,14 @@ public class XQueryDao {
      * @param clazz           The class to map the results to.
      * @param <T>             The type of object to return.
      * @return A list of objects mapped from the query results.
+     * @throws XMLSerializableNotFoundException if the class is not annotated with @XMLSerializableModel
      */
-    public <T> List<T> executeQuery(String query, String collectionPath, Class<T> clazz) {
+    public <T> List<T> executeQuery(String query, String collectionPath, Class<T> clazz) throws XMLSerializableNotFoundException {
+        // Check if the class is annotated with @XMLSerializableModel
+        if (!XMLFileUtil.isXMLSerializable(clazz)) {
+            throw new XMLSerializableNotFoundException();
+        }
+
         List<T> results = new ArrayList<>();
         try {
             // Execute the raw XQuery and retrieve the results
@@ -160,7 +168,7 @@ public class XQueryDao {
         List<T> objList = new ArrayList<>();
 
         // Get all elements with the tag name corresponding to the class name
-        NodeList bookNodes = doc.getElementsByTagName(XMLFileManager.getObjectTagName(clazz));
+        NodeList bookNodes = doc.getElementsByTagName(XMLFileUtil.getObjectTagName(clazz));
 
         // Iterate over the nodes and map each one to an object
         for (int i = 0; i < bookNodes.getLength(); i++) {
@@ -214,25 +222,25 @@ public class XQueryDao {
      *
      * @param fieldType The type of the field to convert the value to.
      * @param value     The string value to be converted.
-     * @return The converted value of the correct type.
-     * @throws ParseException If the value cannot be converted.
+     * @return The converted value.
+     * @throws Exception If the conversion fails.
      */
-    private Object convertValue(Class<?> fieldType, String value) throws ParseException {
-        // Convert the string to the appropriate type based on the field type
-        if (fieldType.equals(int.class)) {
+    private Object convertValue(Class<?> fieldType, String value) throws Exception {
+        if (fieldType == String.class) {
+            return value;
+        } else if (fieldType == int.class || fieldType == Integer.class) {
             return Integer.parseInt(value);
-        } else if (fieldType.equals(double.class)) {
-            return Double.parseDouble(value);
-        } else if (fieldType.equals(boolean.class)) {
-            return Boolean.parseBoolean(value);
-        } else if (fieldType.equals(long.class)) {
+        } else if (fieldType == long.class || fieldType == Long.class) {
             return Long.parseLong(value);
-        } else if (fieldType.equals(java.util.Date.class)) {
+        } else if (fieldType == double.class || fieldType == Double.class) {
+            return Double.parseDouble(value);
+        } else if (fieldType == boolean.class || fieldType == Boolean.class) {
+            return Boolean.parseBoolean(value);
+        } else if (fieldType == java.util.Date.class) {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
             return sdf.parse(value);
         } else {
-            // If no conversion is required, return the value as a string
-            return value;
+            throw new Exception("Unsupported field type: " + fieldType.getName());
         }
     }
 }

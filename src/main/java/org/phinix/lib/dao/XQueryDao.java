@@ -17,56 +17,60 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import org.phinix.lib.service.ExistDB;
 
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
 
 /**
- * XQueryExecutor es una clase responsable de ejecutar consultas XQuery sobre una base de datos eXist-db.
- * También se encarga de mapear los resultados de las consultas a objetos.
+ * XQueryDao is a class responsible for executing XQuery queries over an eXist-db database.
+ * It also maps the results of these queries to Java objects.
  */
 public class XQueryDao {
     private static final Logger logger = Logger.getLogger(XQueryDao.class.getName());
     private final ExistDB existDB;
 
     /**
-     * Constructor que inicializa la clase con una instancia de ExistDB.
+     * Constructor that initializes the class with an instance of ExistDB.
      *
-     * @param existDB La instancia de ExistDB que se utilizará para interactuar con la base de datos.
+     * @param existDB The ExistDB instance used to interact with the database.
      */
     public XQueryDao(ExistDB existDB) {
         this.existDB = existDB;
     }
 
     /**
-     * Ejecuta una consulta XQuery en eXist-db, mapea los resultados y los devuelve como una lista de objetos.
+     * Executes an XQuery query on eXist-db, maps the results, and returns them as a list of objects.
      *
-     * @param query           La cadena XQuery que se ejecutará.
-     * @param collectionPath  El path de la colección en la base de datos.
-     * @param clazz           La clase a la que mapear los resultados.
-     * @param <T>             El tipo de objeto a devolver.
-     * @return Una lista de objetos mapeados desde los resultados de la consulta.
+     * @param query           The XQuery string to execute.
+     * @param collectionPath  The path of the collection in the database.
+     * @param clazz           The class to map the results to.
+     * @param <T>             The type of object to return.
+     * @return A list of objects mapped from the query results.
      */
     public <T> List<T> executeQuery(String query, String collectionPath, Class<T> clazz) {
         List<T> results = new ArrayList<>();
         try {
-            ResourceSet resourceSet = executeRawQuery(query, collectionPath);  // Ejecutar la consulta
+            // Execute the raw XQuery and retrieve the results
+            ResourceSet resourceSet = executeRawQuery(query, collectionPath);
 
-            if (resourceSet == null) {
-                return results;
-            }
+            if (resourceSet != null) {
+                // Iterate through the result set and process each resource
+                for (int i = 0; i < resourceSet.getSize(); i++) {
+                    Resource resource = resourceSet.getResource(i);
+                    String content = (String) resource.getContent();
 
-            // Mapear los resultados a objetos
-            for (int i = 0; i < resourceSet.getSize(); i++) {
-                Resource resource = resourceSet.getResource(i);
-                String content = (String) resource.getContent();
+                    // Parse the XML content into a Document object
+                    Document doc = parseXMLContent(content);
 
-                Document doc = parseXMLContent(content);  // Parsear el XML a un objeto DOM
+                    // Map the XML document to a list of objects of type T
+                    List<T> objList = mapToObjects(clazz, doc);
 
-                List<T> objList = mapToObject(clazz, doc);  // Mapear el XML a una lista de objetos de tipo T
-                results.addAll(objList);  // Agregar todos los objetos mapeados a la lista de resultados
+                    // Add the mapped objects to the results list
+                    results.addAll(objList);
+                }
             }
         } catch (Exception e) {
             logger.log(Level.SEVERE, "Error mapping results to class: " + clazz.getSimpleName(), e);
@@ -75,21 +79,24 @@ public class XQueryDao {
     }
 
     /**
-     * Ejecuta una consulta XQuery en eXist-db y obtiene el conjunto de resultados.
+     * Executes a raw XQuery query on eXist-db and returns the result set.
      *
-     * @param query           La cadena XQuery que se ejecutará.
-     * @param collectionPath  El path de la colección en la base de datos.
-     * @return El conjunto de recursos obtenido como resultado de la consulta.
+     * @param query           The XQuery string to execute.
+     * @param collectionPath  The path of the collection in the database.
+     * @return The resource set obtained as the result of the query.
      */
     private ResourceSet executeRawQuery(String query, String collectionPath) {
-        try {
-            Collection collection = existDB.getCollection(collectionPath);
-            if (collection == null) {
-                throw new RuntimeException("Failed to retrieve the collection.");
-            }
+        // Retrieve the collection from the database
+        Collection collection = getCollection(collectionPath);
+        if (collection == null) {
+            return null;
+        }
 
+        try {
+            // Get the XPathQueryService to execute the XQuery
             XPathQueryService queryService = (XPathQueryService) collection.getService("XPathQueryService", "1.0");
 
+            // Execute the query and return the result set
             return queryService.query(query);
         } catch (XMLDBException e) {
             logger.log(Level.SEVERE, "Error executing query: " + query, e);
@@ -98,69 +105,134 @@ public class XQueryDao {
     }
 
     /**
-     * Convierte una cadena XML en un objeto DOM.
+     * Retrieves a collection from the eXist-db database.
      *
-     * @param content El contenido XML.
-     * @return El objeto Document parseado.
-     * @throws Exception Si ocurre un error durante el parseo.
+     * @param collectionPath The path of the collection.
+     * @return The requested collection.
      */
-    private Document parseXMLContent(String content) throws Exception {
+    private Collection getCollection(String collectionPath) {
         try {
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            DocumentBuilder builder = factory.newDocumentBuilder();
+            // Attempt to retrieve the collection from the database
+            Collection collection = existDB.getCollection(collectionPath);
 
-            return builder.parse(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
-        } catch (Exception e) {
-            // Imprimir el contenido para ver si el XML tiene errores
-            System.out.println("Error parsing XML: " + content);
-            throw new Exception("Error parsing XML", e);  // Re-lanzar para obtener el stack trace
+            // If collection retrieval fails, throw an exception
+            if (collection == null) {
+                throw new RuntimeException("Failed to retrieve the collection.");
+            }
+            return collection;
+        } catch (XMLDBException e) {
+            logger.log(Level.SEVERE, "Error retrieving collection: " + collectionPath, e);
+            return null;
         }
     }
 
     /**
-     * Mapea un objeto DOM a una instancia de la clase proporcionada.
+     * Converts an XML string into a DOM Document object.
      *
-     * @param clazz La clase a la que se mapeará el contenido.
-     * @param doc   El documento XML que contiene los datos.
-     * @param <T>   El tipo de la clase a devolver.
-     * @return La instancia de la clase mapeada.
-     * @throws Exception Si ocurre un error durante el mapeo.
+     * @param content The XML content.
+     * @return The parsed Document object.
+     * @throws Exception If an error occurs during parsing.
      */
-    private <T> List<T> mapToObject(Class<T> clazz, Document doc) throws Exception {
+    private Document parseXMLContent(String content) throws Exception {
+        try {
+            // Create a DocumentBuilderFactory and DocumentBuilder for parsing the XML
+            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+            DocumentBuilder builder = factory.newDocumentBuilder();
+
+            // Parse the XML content and return the resulting Document
+            return builder.parse(new ByteArrayInputStream(content.getBytes(StandardCharsets.UTF_8)));
+        } catch (Exception e) {
+            logger.log(Level.SEVERE, "Error parsing XML: " + content, e);
+            throw new Exception("Error parsing XML", e);
+        }
+    }
+
+    /**
+     * Maps the content of an XML document to a list of objects of the specified class.
+     *
+     * @param clazz The class to which the objects will be mapped.
+     * @param doc   The XML document containing the data.
+     * @param <T>   The type of the class to return.
+     * @return A list of objects mapped from the XML document.
+     * @throws Exception If an error occurs during mapping.
+     */
+    private <T> List<T> mapToObjects(Class<T> clazz, Document doc) throws Exception {
         List<T> objList = new ArrayList<>();
 
-        // Obtener todos los elementos <book>
+        // Get all elements with the tag name corresponding to the class name
         NodeList bookNodes = doc.getElementsByTagName(XMLFileManager.getObjectTagName(clazz));
 
+        // Iterate over the nodes and map each one to an object
         for (int i = 0; i < bookNodes.getLength(); i++) {
             Element bookElement = (Element) bookNodes.item(i);
-            T obj = clazz.getDeclaredConstructor().newInstance();  // Crear una nueva instancia de Book
+            T obj = clazz.getDeclaredConstructor().newInstance();  // Create a new instance of the class
 
-            // Para cada campo de la clase, buscar el nodo correspondiente en el XML
-            for (Field field : clazz.getDeclaredFields()) {
-                field.setAccessible(true);
+            // Map the fields of the object from the XML element
+            mapFieldsToObject(clazz, obj, bookElement);
 
-                // Buscar el nodo correspondiente al campo dentro de cada <book>
-                NodeList nodes = bookElement.getElementsByTagName(field.getName());
-
-                if (nodes.getLength() > 0) {
-                    Element element = (Element) nodes.item(0); // Solo tomamos el primer nodo del campo
-                    String value = element.getTextContent();
-
-                    // Convertir el valor al tipo adecuado según el tipo de campo
-                    if (field.getType().equals(int.class)) {
-                        field.set(obj, Integer.parseInt(value)); // Si es un int
-                    } else {
-                        field.set(obj, value); // Si es un String
-                    }
-                }
-
-                field.setAccessible(false);
-            }
-
-            objList.add(obj); // Agregar el objeto creado a la lista
+            // Add the mapped object to the list
+            objList.add(obj);
         }
 
-        return objList; // Devolver la lista de objetos mapeados
+        return objList;  // Return the list of mapped objects
+    }
+
+    /**
+     * Maps the fields of an object from the XML element's content.
+     *
+     * @param clazz   The class to map the fields to.
+     * @param obj     The object to populate with the field values.
+     * @param element The XML element containing the data for the object.
+     * @param <T>     The type of the class to map the fields to.
+     * @throws Exception If an error occurs during the field mapping.
+     */
+    private <T> void mapFieldsToObject(Class<T> clazz, T obj, Element element) throws Exception {
+        // Iterate through each declared field of the class
+        for (Field field : clazz.getDeclaredFields()) {
+            field.setAccessible(true);  // Allow access to private fields
+
+            // Retrieve the elements that correspond to the field name
+            NodeList nodes = element.getElementsByTagName(field.getName());
+
+            // If the element exists in the XML
+            if (nodes.getLength() > 0) {
+                String value = nodes.item(0).getTextContent();  // Get the content of the element
+
+                // Convert the string value to the appropriate field type
+                Object convertedValue = convertValue(field.getType(), value);
+
+                // Set the converted value to the field of the object
+                field.set(obj, convertedValue);
+            }
+
+            field.setAccessible(false);  // Revert the accessibility of the field
+        }
+    }
+
+    /**
+     * Converts a string value to the appropriate type based on the field's type.
+     *
+     * @param fieldType The type of the field to convert the value to.
+     * @param value     The string value to be converted.
+     * @return The converted value of the correct type.
+     * @throws ParseException If the value cannot be converted.
+     */
+    private Object convertValue(Class<?> fieldType, String value) throws ParseException {
+        // Convert the string to the appropriate type based on the field type
+        if (fieldType.equals(int.class)) {
+            return Integer.parseInt(value);
+        } else if (fieldType.equals(double.class)) {
+            return Double.parseDouble(value);
+        } else if (fieldType.equals(boolean.class)) {
+            return Boolean.parseBoolean(value);
+        } else if (fieldType.equals(long.class)) {
+            return Long.parseLong(value);
+        } else if (fieldType.equals(java.util.Date.class)) {
+            SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd");
+            return sdf.parse(value);
+        } else {
+            // If no conversion is required, return the value as a string
+            return value;
+        }
     }
 }

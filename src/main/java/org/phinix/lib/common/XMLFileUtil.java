@@ -1,4 +1,4 @@
-package org.phinix.lib.common.util;
+package org.phinix.lib.common;
 
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;

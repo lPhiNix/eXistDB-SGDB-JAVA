@@ -1,4 +1,6 @@
-package org.phinix.lib.common.util;
+package org.phinix.lib.common;
+
+import org.phinix.lib.common.XMLSerializableModel;
 
 /**
  * <p>Exception thrown when an object that is not annotated with {@link XMLSerializableModel}

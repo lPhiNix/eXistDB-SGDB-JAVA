@@ -1,4 +1,7 @@
-package org.phinix.lib.common.util;
+package org.phinix.lib.common;
+
+import org.phinix.lib.common.XMLFileUtil;
+import org.phinix.lib.common.XMLSerializableNotFoundException;
 
 /**
  * XQueryFactory is a class responsible for building XQuery queries.

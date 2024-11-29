@@ -1,7 +1,7 @@
 package org.phinix.lib.dao;
 
-import org.phinix.lib.common.util.XMLFileUtil;
-import org.phinix.lib.common.util.XMLSerializableNotFoundException;
+import org.phinix.lib.common.XMLFileUtil;
+import org.phinix.lib.common.XMLSerializableNotFoundException;
 import org.phinix.lib.service.ExistDB;
 import org.w3c.dom.Document;
 import org.xmldb.api.base.Collection;

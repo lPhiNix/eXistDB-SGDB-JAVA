@@ -1,6 +1,6 @@
 package org.phinix.example.model;
 
-import org.phinix.lib.common.util.XMLSerializableModel;
+import org.phinix.lib.common.XMLSerializableModel;
 
 @XMLSerializableModel
 public class Essay {

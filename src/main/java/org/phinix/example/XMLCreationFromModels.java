@@ -2,8 +2,8 @@ package org.phinix.example;
 
 import org.phinix.example.model.Book;
 import org.phinix.example.model.Poem;
-import org.phinix.lib.common.util.XMLFileUtil;
-import org.phinix.lib.common.util.XMLSerializableNotFoundException;
+import org.phinix.lib.common.XMLFileUtil;
+import org.phinix.lib.common.XMLSerializableNotFoundException;
 
 import java.util.ArrayList;
 import java.util.List;

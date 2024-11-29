@@ -1,9 +1,9 @@
 package org.phinix.example;
 
 import org.phinix.example.model.Essay;
-import org.phinix.lib.common.util.XMLFileUtil;
-import org.phinix.lib.common.util.XMLSerializableNotFoundException;
-import org.phinix.lib.common.util.XQueryFactory;
+import org.phinix.lib.common.XMLFileUtil;
+import org.phinix.lib.common.XMLSerializableNotFoundException;
+import org.phinix.lib.common.XQueryFactory;
 import org.phinix.lib.dao.XQueryDao;
 import org.phinix.lib.service.ExistDB;
 

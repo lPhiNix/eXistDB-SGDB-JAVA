@@ -10,17 +10,6 @@ import org.phinix.lib.service.ExistDB;
 import java.util.ArrayList;
 import java.util.List;
 
-/**
- * <p>The FinalExample class demonstrates the use of the XMLFileManager utility
- * to convert lists of model objects (Book and Poem) into XML files.</p>
- *
- * <p>
- * It shows how to:
- * - Create lists of objects.
- * - Serialize those objects to XML using the XMLFileManager.
- * - Specify custom root element tags for the generated XML files.
- * </p>
- */
 public class FinalExample {
     public static void main(String[] args) throws XMLSerializableNotFoundException, Exception {
         // essays.xml creation
@@ -31,7 +20,7 @@ public class FinalExample {
 
         XMLFileUtil.generateXmlFromObjects(essays, "essays.xml");
 
-        // Add XML manually
+        // Add XML manually . . .
 
         // example query
         ExistDB existDB = ExistDB.getInstance("admin", "admin");

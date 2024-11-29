@@ -1,8 +1,8 @@
 package org.phinix.lib.dao;
 
-import org.phinix.lib.common.util.XMLSerializableModel;
 import org.phinix.lib.common.util.XMLSerializableNotFoundException;
 import org.phinix.lib.common.util.XMLFileUtil;
+
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
 import org.w3c.dom.NodeList;
@@ -19,7 +19,6 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import org.phinix.lib.service.ExistDB;
 
@@ -46,11 +45,11 @@ public class XQueryDao {
     /**
      * Executes an XQuery query on eXist-db, maps the results, and returns them as a list of objects.
      *
-     * @param query           The XQuery string to execute.
-     * @param collectionPath  The path of the collection in the database.
-     * @param clazz           The class to map the results to.
-     * @param <T>             The type of object to return.
-     * @return A list of objects mapped from the query results.
+     * @param query                             The XQuery string to execute.
+     * @param collectionPath                    The path of the collection in the database.
+     * @param clazz                             The class to map the results to.
+     * @param <T>                               The type of object to return.
+     * @return                                  A list of objects mapped from the query results.
      * @throws XMLSerializableNotFoundException if the class is not annotated with @XMLSerializableModel
      */
     public <T> List<T> executeQuery(String query, String collectionPath, Class<T> clazz) throws XMLSerializableNotFoundException {
@@ -91,7 +90,7 @@ public class XQueryDao {
      *
      * @param query           The XQuery string to execute.
      * @param collectionPath  The path of the collection in the database.
-     * @return The resource set obtained as the result of the query.
+     * @return                The resource set obtained as the result of the query.
      */
     private ResourceSet executeRawQuery(String query, String collectionPath) {
         // Retrieve the collection from the database
@@ -116,7 +115,7 @@ public class XQueryDao {
      * Retrieves a collection from the eXist-db database.
      *
      * @param collectionPath The path of the collection.
-     * @return The requested collection.
+     * @return               The requested collection.
      */
     private Collection getCollection(String collectionPath) {
         try {
@@ -137,8 +136,8 @@ public class XQueryDao {
     /**
      * Converts an XML string into a DOM Document object.
      *
-     * @param content The XML content.
-     * @return The parsed Document object.
+     * @param content    The XML content.
+     * @return           The parsed Document object.
      * @throws Exception If an error occurs during parsing.
      */
     private Document parseXMLContent(String content) throws Exception {
@@ -158,21 +157,21 @@ public class XQueryDao {
     /**
      * Maps the content of an XML document to a list of objects of the specified class.
      *
-     * @param clazz The class to which the objects will be mapped.
-     * @param doc   The XML document containing the data.
-     * @param <T>   The type of the class to return.
-     * @return A list of objects mapped from the XML document.
+     * @param clazz      The class to which the objects will be mapped.
+     * @param doc        The XML document containing the data.
+     * @param <T>        The type of the class to return.
+     * @return           A list of objects mapped from the XML document.
      * @throws Exception If an error occurs during mapping.
      */
     private <T> List<T> mapToObjects(Class<T> clazz, Document doc) throws Exception {
         List<T> objList = new ArrayList<>();
 
         // Get all elements with the tag name corresponding to the class name
-        NodeList bookNodes = doc.getElementsByTagName(XMLFileUtil.getObjectTagName(clazz));
+        NodeList nodes = doc.getElementsByTagName(XMLFileUtil.getObjectTagName(clazz));
 
         // Iterate over the nodes and map each one to an object
-        for (int i = 0; i < bookNodes.getLength(); i++) {
-            Element bookElement = (Element) bookNodes.item(i);
+        for (int i = 0; i < nodes.getLength(); i++) {
+            Element bookElement = (Element) nodes.item(i);
             T obj = clazz.getDeclaredConstructor().newInstance();  // Create a new instance of the class
 
             // Map the fields of the object from the XML element
@@ -188,10 +187,10 @@ public class XQueryDao {
     /**
      * Maps the fields of an object from the XML element's content.
      *
-     * @param clazz   The class to map the fields to.
-     * @param obj     The object to populate with the field values.
-     * @param element The XML element containing the data for the object.
-     * @param <T>     The type of the class to map the fields to.
+     * @param clazz      The class to map the fields to.
+     * @param obj        The object to populate with the field values.
+     * @param element    The XML element containing the data for the object.
+     * @param <T>        The type of the class to map the fields to.
      * @throws Exception If an error occurs during the field mapping.
      */
     private <T> void mapFieldsToObject(Class<T> clazz, T obj, Element element) throws Exception {
@@ -220,9 +219,9 @@ public class XQueryDao {
     /**
      * Converts a string value to the appropriate type based on the field's type.
      *
-     * @param fieldType The type of the field to convert the value to.
-     * @param value     The string value to be converted.
-     * @return The converted value.
+     * @param fieldType  The type of the field to convert the value to.
+     * @param value      The string value to be converted.
+     * @return           The converted value.
      * @throws Exception If the conversion fails.
      */
     private Object convertValue(Class<?> fieldType, String value) throws Exception {

@@ -14,17 +14,18 @@ public class Test {
         ExistDB existDB = ExistDB.getInstance("admin", "admin");
         XQueryDao dao = new XQueryDao(existDB);
 
-        String pathCollection = "/db/bookshop/poems";
+        String pathCollection = "/db/bookshop/novels";
 
-        // Construir la consulta XQuery
-        String query = XQueryFactory.buildQuery(pathCollection);
+        String query = XQueryFactory.buildQuery(pathCollection, Book.class, "year < 1950");
+
+        System.out.println(query);
 
         // Ejecutar la consulta y mapear los resultados
-        List<Poem> poems = dao.executeQuery(query, pathCollection, Poem.class);
+        List<Book> poems = dao.executeQuery(query, pathCollection, Book.class);
 
         // Imprimir los resultados
-        for (Poem poem : poems) {
-            System.out.println(poem);
+        for (Book book : poems) {
+            System.out.println(book);
         }
     }
 }

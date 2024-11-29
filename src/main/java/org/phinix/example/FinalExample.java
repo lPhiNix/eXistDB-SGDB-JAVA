@@ -35,5 +35,7 @@ public class FinalExample {
         for (Essay essay : essaysWithYearLessTo0) {
             System.out.println(essay);
         }
+
+        existDB.shutdown();
     }
 }

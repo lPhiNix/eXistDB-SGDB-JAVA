@@ -56,5 +56,7 @@ public class BuildAndExecutionXQueries {
         for (Book book : booksWithYearLess1950) {
             System.out.println(book.getAuthor());
         }
+
+        existDB.shutdown();
     }
 }

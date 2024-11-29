@@ -9,7 +9,7 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
- * The {@code ExistDB} class provides a singleton utility for managing connections
+ * The {@link ExistDB} class provides a singleton utility for managing connections
  * to an eXist-db database instance. It handles initialization, testing connections,
  * retrieving collections, and shutting down the database driver.
  *

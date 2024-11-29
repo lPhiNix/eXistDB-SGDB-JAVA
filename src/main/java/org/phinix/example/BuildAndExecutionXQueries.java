@@ -9,6 +9,17 @@ import org.phinix.lib.service.ExistDB;
 
 import java.util.List;
 
+/**
+ * <p>The BuildAndExecutionXQueries class demonstrates the use of the XQueryFactory and XQueryDao utility
+ * to build, manage and execute queries in eXist-DB database.</p>
+ *
+ * <p>
+ * It shows how to:
+ * - Database conection.
+ * - Build queries.
+ * - Execution remote queries, data mapping and get result queries.
+ * </p>
+ */
 public class BuildAndExecutionXQueries {
     public static void main(String[] args) throws Exception, XMLSerializableNotFoundException {
         ExistDB existDB = ExistDB.getInstance("admin", "admin");
